@@ -7,7 +7,7 @@ class Config:
     # what is the maximum context length for predictions? / length of a sequence (maximum context lengt)
     block_size = 256
     # how many iterations to train the model 
-    max_iters = 2500
+    max_iters = 6000
     # evaluate the model every eval_interval iterations
     eval_interval = 500
     # learning rate
