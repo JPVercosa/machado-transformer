@@ -3,15 +3,31 @@ import utils
 from config import Config
 from nanoGPT_model import GPTLanguageModel
 import time
+import sys
+import os
+
+assert os.path.exists('data'), "Please create a data folder in the root directory"
+assert os.path.exists('models'), "Please create a models folder in the root directory"
+
+assert len(sys.argv) == 3, "Usage: python train.py <data_name> <model_name> \n" \
+                            "\t<data_name> is the name of the data in the data folder \n" \
+                            "\t<model_name> is the output name of the model in the models folder\n" \
+                            "\t e.g. python train.py machado.txt machado.pt"
+
+assert sys.argv[1].endswith('.txt'), "Data file must be a .txt file"
+assert sys.argv[2].endswith('.pt'), "Model file must be a .pt file"
+
+data_name = sys.argv[1]
+DATA_PATH = f"data/{data_name}"
+MODEL_NAME = sys.argv[2]
+model_path = f'models/{MODEL_NAME}'
 
 max_iters = Config.max_iters
 device = Config.device
 learning_rate = Config.learning_rate
 eval_interval = Config.eval_interval
 
-data_path = 'data/romance.txt'
-
-data_text, chars, vocab_size = utils.read_input_data(data_path)
+data_text, chars, vocab_size = utils.read_input_data(DATA_PATH)
 
 stoi, itos = utils.get_stoi_itos(chars)
 
@@ -26,15 +42,21 @@ model = GPTLanguageModel(vocab_size).to(device)
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
 print(sum(p.numel() for p in model.parameters() if p.requires_grad), 'parameters')
+print('-'*40)
 
 start = time.time()
 for iter in range(max_iters):
 
     if iter % eval_interval == 0 or iter == max_iters - 1:
         losses = utils.estimate_loss(model, train, val)
-        print(f"step {iter}: train loss {losses['train']:.4f}, val loss {losses['val']:.4f}")
+        print(f"Epoch {iter}: train loss {losses['train']:.4f}, val loss {losses['val']:.4f}")
         time_checkpoint = time.time()
         print("\tElapsed time: ", time.strftime("%H:%M:%S", time.gmtime((time_checkpoint - start))))
+        if iter == 0:
+            print("\tEstimated time per epoch: ", time.strftime("%H:%M:%S", time.gmtime((time_checkpoint - start))))
+        else:
+            print("\tEstimated time remaining: ", time.strftime("%H:%M:%S", time.gmtime((time_checkpoint - start)*(max_iters-iter)/(iter+1))))
+        print('-'*40)
 
     xb, yb = utils.get_batch(train)
 
@@ -44,19 +66,25 @@ for iter in range(max_iters):
     loss.backward()
     optimizer.step()
 
+print("Training complete!")
+print("\tTotal time: ", time.strftime("%H:%M:%S", time.gmtime((time.time() - start))), \
+      "\n\tTime per epoch: ", time.strftime("%H:%M:%S", time.gmtime(((time.time() - start)/max_iters))))
+print('-'*40 + "\n")
+
+print("Saving model...\n")
 # save the model
-torch.save(model, 'models/machado.pt')
+try:
+    torch.save(model, model_path)
+except:
+    print("Could not save model.")
 
 # generate text from the model
 context = torch.zeros((1,1), dtype=torch.long, device=device) # start with a single <BOS> token 
+model.eval()
 
-print(decode(model.generate(context, max_new_tokens=2500)[0].tolist()))     
-     
-
-# for i in range(2500):
-#     # generate the next token using the entire previous context
-#     next_token = model.generate(context, max_new_tokens=1)[0]
-#     # decode and print the next token
-#     print(decode(next_token.tolist()), end='')
-#     # update the context with the next token
-#     context = torch.cat([context, next_token.unsqueeze(0)], dim=1)
+max_new_tokens = 1000
+loader = utils.Loader(f"Generating text with {max_new_tokens} characters...", "Done!", 0.1).start()
+print("\n"+"-"*40)
+print(decode(model.generate(context, max_new_tokens=max_new_tokens)[0].tolist()))
+print("-"*40)
+loader.stop()
