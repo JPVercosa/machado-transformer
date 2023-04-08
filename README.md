@@ -5,7 +5,7 @@ The model has been adapted from Jupyter Notebooks to Python scripts, using data 
 
 - The first model has been trained on a compilation of all texts available in the Machado de Assis dataset.
 - The second model has been trained only on Romances from Machado De Assis.
-- The third model has been trained on Contos from Machado De Assis.
+- The third model has been trained on Cronicas from Machado De Assis.
 
 The architecture of the models uses a Generative Transformer with Attention Mechanism, with individual characters from the dataset representing the tokens. The parameters of the architecture can be changed by modifying the config.py file, and new training can be initiated using custom text datasets with the train.py file.
 
