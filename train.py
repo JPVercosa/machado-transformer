@@ -17,10 +17,10 @@ assert len(sys.argv) == 3, "Usage: python train.py <data_name> <model_name> \n" 
 assert sys.argv[1].endswith('.txt'), "Data file must be a .txt file"
 assert sys.argv[2].endswith('.pt'), "Model file must be a .pt file"
 
-data_name = sys.argv[1]
-DATA_PATH = f"data/{data_name}"
+DATA_NAME = sys.argv[1]
+DATA_PATH = f"data/{DATA_NAME}"
 MODEL_NAME = sys.argv[2]
-model_path = f'models/{MODEL_NAME}'
+MODEL_PATH = f'models/{MODEL_NAME}'
 
 max_iters = Config.max_iters
 device = Config.device
@@ -74,7 +74,7 @@ print('-'*40 + "\n")
 print("Saving model...\n")
 # save the model
 try:
-    torch.save(model, model_path)
+    torch.save(model, MODEL_PATH)
 except:
     print("Could not save model.")
 
