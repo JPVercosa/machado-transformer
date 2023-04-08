@@ -1,5 +1,5 @@
 # machado-Transformer
-This repository is a study in Data Science and Deep Learning, based on Andrej Karpathy's class on YouTube. The purpose of this project is to create a transformer that generates text in the style of Machado de Assis, a renowned Brazilian writer.
+This repository is a study in Data Science and Deep Learning, based on [Andrej Karpathy's](https://karpathy.ai/) [class on YouTube](https://www.youtube.com/watch?v=kCc8FmEb1nY&ab_channel=AndrejKarpathy). The purpose of this project is to create a transformer that generates text in the style of Machado de Assis, a renowned Brazilian writer.
 
 The model has been adapted from Jupyter Notebooks to Python scripts, using data from a Kaggle dataset. Three PyTorch models have been created:
 
@@ -12,18 +12,18 @@ The architecture of the models uses a Generative Transformer with Attention Mech
 It is important to note that the generated text can contain hallucinations, which can vary depending on the training time/epochs and the size of the dataset.
 
 You can run this code on Google Colab. Just clone the repository with:
-'''
+```
 !git clone https://github.com/JPVercosa/machado-transformer
-'''
+```
 
 Then is possible to train a new model using: 
-'''
+```
 !python train.py <data_name> <model_name>
-'''
+```
 
 You can inference with the models that are on the repository with:
-'''
+```
 !python inference.py <data_name> <model_name> <number_of_tokens>
-'''
+```
 
 Thank you for visiting this repository. If you have any questions or feedback, please feel free to reach out.
